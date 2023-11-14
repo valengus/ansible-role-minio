@@ -1,0 +1,24 @@
+---
+
+- include_tasks: pre.yml
+
+- name: MinIO | Print vars
+  ansible.builtin.debug:
+    msg:
+    - "ansible_host: {{ ansible_host }}"
+    - "You have {{ minio_disks_count | int }} disk(s)"
+    - "You have {{ ansible_play_hosts | length | int }} host(s)"
+
+- include_tasks: install.yml
+
+- include_tasks: config.yml
+
+- include_tasks: buckets.yml
+
+- name: Create MinIO Users
+  include_tasks: users.yml
+  when: minio_users is defined
+  with_items:
+    - "{{ minio_users }}"
+
+- include_tasks: output.yml

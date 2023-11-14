@@ -1,0 +1,12 @@
+---
+minio_disk_label_prefix: "minIO-"
+minio_root_user: "admin"
+minio_root_password: "password"
+minio_version: "RELEASE.2023-11-01T18-37-25Z"
+minio_client_version: "RELEASE.2023-11-06T04-19-23Z"
+
+minio_port: 9000
+minio_console_port: 9001
+minio_metrics_wo_auth: True
+minio_mc_alias: local
+local_tmp: /var/tmp

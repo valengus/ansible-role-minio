@@ -1,0 +1,5 @@
+---
+minio_user: minio
+minio_group: minio
+minio_home: /var/minio
+minio_bin_path: /opt/minio/bin

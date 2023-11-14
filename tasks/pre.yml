@@ -1,0 +1,17 @@
+---
+- name: "pre | Install EPEL"
+  ansible.builtin.package:
+    name: oracle-epel-release-el8
+
+- name: "pre | Python librarys"
+  ansible.builtin.package:
+    name:
+    - python3-botocore # Low-level, data-driven core of boto 3
+    - python3-boto3    # The AWS SDK for Python
+
+- name: "pre | XFS"
+  ansible.builtin.package:
+    name: xfsprogs
+
+- name: MinIO | Setting fact minio_disks_count
+  ansible.builtin.set_fact: minio_disks_count="{{ minio_disks|length }}"

@@ -1,0 +1,50 @@
+---
+- name: 'MinIO | Policy dirs'
+  file:
+    path: "{{minio_home}}/policies"
+    state: directory
+    owner: "{{minio_user}}"
+    group: "{{minio_group}}"
+
+- name: MinIO | create buckets
+  s3_bucket:
+    name: "{{item}}"
+    aws_access_key: "{{ minio_root_user }}"
+    aws_secret_key: "{{ minio_root_password }}"
+    state: present
+    region: us-east-1
+    versioning: no
+    s3_url: "http://127.0.0.1:{{minio_port}}"
+  with_items: "{{ minio_buckets }}"
+  when: minio_buckets is defined
+
+- name: MinIO | create buckets read-only_policy json
+  ansible.builtin.template:
+    src: read-only_policy.json
+    dest: "{{minio_home}}/policies/{{item}}_read-only_policy.json"
+    owner: "{{ minio_user }}"
+    group: "{{ minio_group }}"
+    mode: 0640
+  with_items: "{{ minio_buckets }}"
+  when: minio_buckets is defined
+  run_once: True
+
+- name: MinIO | create buckets read-write_policy json
+  ansible.builtin.template:
+    src: read-write_policy.json
+    dest: "{{minio_home}}/policies/{{item}}_read-write_policy.json"
+    owner: "{{ minio_user }}"
+    group: "{{ minio_group }}"
+    mode: 0640
+  with_items: "{{ minio_buckets }}"
+  when: minio_buckets is defined
+  run_once: True
+
+- name: MinIO | MinIO | Policy create
+  shell: |
+    /usr/local/bin/mc admin policy create {{minio_mc_alias}} read-write_{{item}} {{minio_home}}/policies/{{item}}_read-write_policy.json
+    /usr/local/bin/mc admin policy create {{minio_mc_alias}} read-only_{{item}} {{minio_home}}/policies/{{item}}_read-only_policy.json
+  register: output
+  with_items: "{{ minio_buckets }}"
+  when: minio_buckets is defined
+  run_once: True

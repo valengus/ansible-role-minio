@@ -1,0 +1,15 @@
+---
+
+- name: MinIO | Create users
+  shell: "/usr/local/bin/mc admin user add {{ minio_mc_alias }} {{ item.name }} {{ item.password }}"
+  run_once: True
+
+- name: MinIO | Policy attach to user
+  shell: |
+    {% for policy in item.policies %}
+    if ! /usr/local/bin/mc admin policy entities {{minio_mc_alias}} -u {{item.name}} | grep {{policy}} ; then 
+    /usr/local/bin/mc admin policy attach {{minio_mc_alias}} {{policy}} -u {{item.name}} ; 
+    fi ;
+    {% endfor %}
+  register: output
+  run_once: True

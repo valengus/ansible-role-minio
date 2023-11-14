@@ -1,0 +1,40 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'libvirt'
+
+Vagrant.configure("2") do |config|
+
+  $minio_instances ||= 2
+  (1..$minio_instances ).each do |i|
+    config.vm.define "minio0#{i}" do |config|
+      config.vm.hostname = "minio0#{i}"
+      config.vm.box     = "oraclelinux/8"
+      config.vm.box_url = "https://oracle.github.io/vagrant-projects/boxes/oraclelinux/8.json"
+      config.vm.synced_folder ".", "/vagrant", disabled: true
+      config.vm.provider :libvirt do |libvirt|
+        libvirt.cpus             = 1
+        libvirt.memory           = 2 * 1024
+        libvirt.qemu_use_session          = false
+        libvirt.management_network_name   = 'vagrant'
+        libvirt.management_network_domain = 'local'
+        libvirt.storage :file, :size => '10G'
+        libvirt.storage :file, :size => '10G'
+      end
+      if i == $minio_instances
+        config.vm.provision "ansible" do |ansible|
+          ansible.compatibility_mode = "2.0"
+          ansible.host_key_checking  = false
+          ansible.become             = true
+          ansible.playbook          = "test.yml"  
+          ansible.galaxy_roles_path = "../.."
+          ansible.limit             = "minio"
+          ansible.groups = {
+            "minio" => ["minio0[1:#{$minio_instances}]"],  
+          }
+        end
+      end
+    end
+  end
+
+end

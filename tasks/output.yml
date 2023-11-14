@@ -1,0 +1,5 @@
+---
+- name: MinIO | Output
+  ansible.builtin.debug:
+    msg:
+    - MINIO_SERVER_URL="http://{{ ansible_default_ipv4.address }}:{{minio_console_port}}"

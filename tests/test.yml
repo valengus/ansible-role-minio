@@ -1,0 +1,24 @@
+---
+- name: Instal MinIO
+  hosts: minio
+
+  tasks:
+
+  - include_role: name=ansible-role-minio
+    vars:
+      minio_disks:
+        - { disk: '/dev/vdb', fstype: 'xfs' }
+        - { disk: '/dev/vdc', fstype: 'xfs' }
+      minio_buckets:
+      - bucket1
+      - bucket2
+      minio_users:
+      - name: 'user1'
+        password: 'OeHa5ohquoh8een9'
+        policies: ['read-write_bucket1']
+      - name: 'user2'
+        password: 'Iwohh3ieziep2wii'
+        policies: ['read-only_bucket2']
+      - name: 'user3'
+        password: 'Iwohh3ieOeHa5oh'
+        policies: ['read-write_bucket1', 'read-write_bucket2']
