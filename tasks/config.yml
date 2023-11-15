@@ -21,9 +21,12 @@
     name: minio
     enabled: yes
 
+- name: MinIO | setcap cap_net_bind_service=+ep 
+  shell: "setcap cap_net_bind_service=+ep {{minio_bin_path}}//minio"
+
 - ansible.builtin.meta: flush_handlers
 
 - name: MinIO | Set local alias
-  shell: /usr/local/bin/mc alias set {{minio_mc_alias}} http://127.0.0.1:{{minio_port}} {{minio_root_user}} {{minio_root_password}}
+  shell: "/usr/local/bin/mc alias set {{minio_mc_alias}} http://127.0.0.1:{{minio_port}} {{minio_root_user}} {{minio_root_password}}"
   register: output
   changed_when: False
