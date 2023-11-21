@@ -2,7 +2,7 @@
 - name: restart minio
   shell: systemctl restart minio &
   delegate_to: "{{ item }}"
-  with_items: "{{ groups['all'] }}" # restart all minio
+  with_items: "{{ ansible_play_hosts_all }}" # restart all minio
   run_once: True
 
 - name: reload systemd
